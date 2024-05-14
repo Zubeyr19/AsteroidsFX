@@ -5,6 +5,7 @@ import dk.sdu.mmmi.cbse.asteroid.AsteroidPlugin;
 
 module Asteroid {
     exports dk.sdu.mmmi.cbse.asteroid;
+    exports dk.sdu.mmmi.cbse.asteroid.splitpackage;
     requires Common;
     requires CommonBullet;
     uses dk.sdu.mmmi.cbse.common.bullet.BulletSPI;
