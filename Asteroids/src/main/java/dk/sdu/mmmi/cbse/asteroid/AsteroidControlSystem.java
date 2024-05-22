@@ -1,5 +1,6 @@
 package dk.sdu.mmmi.cbse.asteroid;
 
+import dk.sdu.mmmi.cbse.common.asteroids.IAsteroidSplitter;
 import dk.sdu.mmmi.cbse.common.bullet.BulletSPI;
 import dk.sdu.mmmi.cbse.common.data.Entity;
 import dk.sdu.mmmi.cbse.common.data.GameData;
@@ -14,7 +15,10 @@ import static java.util.stream.Collectors.toList;
 
 
 
-public class AsteroidControlSystem implements IEntityProcessingService{
+public class AsteroidControlSystem implements IEntityProcessingService {
+
+    private IAsteroidSplitter asteroidSplitter;
+    //add method for further use
 
     @Override
     public void process(GameData gameData, World world) {
@@ -66,6 +70,7 @@ public class AsteroidControlSystem implements IEntityProcessingService{
             }
         }
     }
+
     @Override
     public void postProcess(GameData gameData, World world) {
 
@@ -87,4 +92,13 @@ public class AsteroidControlSystem implements IEntityProcessingService{
 
     private static final int MIN_ASTEROIDS = 5;
     private AsteroidPlugin asteroidPlugin = new AsteroidPlugin();
+
+    public void setAsteroidSplitter(IAsteroidSplitter asteroidSplitter) {
+        this.asteroidSplitter = asteroidSplitter;
+    }
+
+    public void removeAsteroidSplitter(IAsteroidSplitter asteroidSplitter) {
+        this.asteroidSplitter = null;
+    }
+
 }

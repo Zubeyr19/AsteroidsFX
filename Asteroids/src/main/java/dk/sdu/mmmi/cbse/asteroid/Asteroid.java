@@ -1,16 +1,13 @@
 package dk.sdu.mmmi.cbse.asteroid;
 
-
 import dk.sdu.mmmi.cbse.common.data.Entity;
 import dk.sdu.mmmi.cbse.common.data.GameData;
 import dk.sdu.mmmi.cbse.common.data.World;
 
-
 public class Asteroid extends Entity {
 
     private int asteroidSize;
-
-    private AsteroidPlugin asteroidPlugin = new AsteroidPlugin();
+    private final AsteroidPlugin asteroidPlugin = new AsteroidPlugin();
 
     @Override
     public void handleCollision(GameData gameData, World world, Entity collidingEntity) {
@@ -20,6 +17,9 @@ public class Asteroid extends Entity {
                 break;
             case 2:
                 handleAsteroidSizeTwo(gameData, world, collidingEntity);
+                break;
+            case 3:
+                handleAsteroidSizeThree(gameData, world, collidingEntity);
                 break;
             default:
                 handleDefaultAsteroidSize(gameData, world, collidingEntity);
@@ -33,29 +33,32 @@ public class Asteroid extends Entity {
     }
 
     private void handleAsteroidSizeTwo(GameData gameData, World world, Entity collidingEntity) {
-        for (int i = 0; i < 2; i++) {
-            Entity asteroidChild = asteroidPlugin.createAsteroid(gameData);
-            asteroidPlugin.setAsteroidCoordinates(asteroidChild, 1);
-            asteroidChild.setX(this.getX());
-            asteroidChild.setY(this.getY());
-            asteroidChild.setRotation(Math.random() * 360);
-            world.addEntity(asteroidChild);
-        }
+        spawnChildAsteroids(gameData, world, 1);
+        world.removeEntity(collidingEntity);
+        world.removeEntity(this);
+    }
+
+    private void handleAsteroidSizeThree(GameData gameData, World world, Entity collidingEntity) {
+        spawnChildAsteroids(gameData, world, 2);
         world.removeEntity(collidingEntity);
         world.removeEntity(this);
     }
 
     private void handleDefaultAsteroidSize(GameData gameData, World world, Entity collidingEntity) {
+        spawnChildAsteroids(gameData, world, 3);
+        world.removeEntity(collidingEntity);
+        world.removeEntity(this);
+    }
+
+    private void spawnChildAsteroids(GameData gameData, World world, int newAsteroidSize) {
         for (int i = 0; i < 2; i++) {
-            Entity asteroidChild = asteroidPlugin.createAsteroid(gameData);
-            asteroidPlugin.setAsteroidCoordinates(asteroidChild, 2);
+            Asteroid asteroidChild = (Asteroid) asteroidPlugin.createAsteroid(gameData);
+            AsteroidUtils.setAsteroidCoordinates(asteroidChild, newAsteroidSize);
             asteroidChild.setX(this.getX());
             asteroidChild.setY(this.getY());
             asteroidChild.setRotation(Math.random() * 360);
             world.addEntity(asteroidChild);
         }
-        world.removeEntity(collidingEntity);
-        world.removeEntity(this);
     }
 
     public int getAsteroidSize() {

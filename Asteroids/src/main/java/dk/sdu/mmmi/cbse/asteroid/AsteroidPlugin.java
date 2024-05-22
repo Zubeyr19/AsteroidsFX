@@ -28,6 +28,9 @@ public class AsteroidPlugin implements IGamePluginService {
         setAsteroidCoordinates(asteroid, 3);
 
         setAsteroidPosition(gameData, asteroid);
+        asteroid.setX(gameData.getDisplayWidth()/2);
+        asteroid.setY(0);
+        asteroid.setRotation(90);
         return asteroid;
     }
 
@@ -56,48 +59,43 @@ public class AsteroidPlugin implements IGamePluginService {
     }
 
 
-    private void setAsteroidPosition(GameData gamedata, Entity asteroid) {
+    private void setAsteroidPosition(GameData gameData, Entity asteroid) {
         Random random = new Random();
 
-        int randomX;
-        int randomY;
-        double randomRotation;
+        // Define possible starting positions and rotations
+        Runnable[] positionSetters = new Runnable[]{
+                // Set asteroid at the top
+                () -> {
+                    asteroid.setX(random.nextInt(gameData.getDisplayWidth()));
+                    asteroid.setY(0);
+                    asteroid.setRotation(random.nextDouble() * 180);
+                },
+                // Set asteroid at the bottom
+                () -> {
+                    asteroid.setX(random.nextInt(gameData.getDisplayWidth()));
+                    asteroid.setY(gameData.getDisplayHeight());
+                    asteroid.setRotation(-random.nextDouble() * 180);
+                },
+                // Set asteroid to the left
+                () -> {
+                    asteroid.setX(0);
+                    asteroid.setY(random.nextInt(gameData.getDisplayHeight()));
+                    asteroid.setRotation(random.nextDouble() * 180 - 90);
+                },
+                // Set asteroid to the right
+                () -> {
+                    asteroid.setX(gameData.getDisplayWidth());
+                    asteroid.setY(random.nextInt(gameData.getDisplayHeight()));
+                    asteroid.setRotation(random.nextDouble() * 180 + 90);
+                }
+        };
 
-        switch ((int) (Math.random() * 4) + 1) {
-            case 1:
-                randomX = (int) (Math.random() * gamedata.getDisplayWidth());
-                randomY = 0;
-                randomRotation = Math.random() * 180;
-                break;
-            case 2:
-                randomX = (int) (Math.random() * gamedata.getDisplayWidth());
-                randomY = gamedata.getDisplayHeight();
-                randomRotation = -Math.random() * 180;
-                break;
-            case 3:
-                randomX = 0;
-                randomY = (int) (Math.random() * gamedata.getDisplayHeight());
-                randomRotation = random.nextDouble() * 180 - 90;
-                break;
-            case 4:
-                randomX = gamedata.getDisplayWidth();
-                randomY = (int) (Math.random() * gamedata.getDisplayHeight());
-                randomRotation = random.nextDouble() * 180 + 90;
-                break;
-            default:
-                // Handle unexpected case (should never happen with proper random number generation)
-                throw new IllegalStateException("Unexpected randomizer value");
-        }
-
-        asteroid.setX(randomX);
-        asteroid.setY(randomY);
-        asteroid.setRotation(randomRotation);
-
+        // Select and run a random position setter
+        positionSetters[random.nextInt(positionSetters.length)].run();
     }
-
     @Override
     public void stop(GameData gameData, World world) {
-        // Remove entities
+
         world.removeEntity(asteroid);
     }
 }
